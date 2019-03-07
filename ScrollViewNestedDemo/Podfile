@@ -1,0 +1,10 @@
+platform :ios, '9.0'
+# use_frameworks!
+
+target 'ScrollViewNestedDemo' do
+  
+	pod 'SDCycleScrollView','~> 1.75'
+  pod 'TYPagerController'
+  # pod 'JXCategoryView'
+
+end
