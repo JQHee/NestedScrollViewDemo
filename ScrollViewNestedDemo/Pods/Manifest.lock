@@ -1,4 +1,5 @@
 PODS:
+  - MJRefresh (3.1.15.7)
   - SDCycleScrollView (1.75):
     - SDWebImage (>= 4.0.0)
   - SDWebImage (4.4.6):
@@ -7,20 +8,23 @@ PODS:
   - TYPagerController (2.1.2)
 
 DEPENDENCIES:
+  - MJRefresh (~> 3.1.15.7)
   - SDCycleScrollView (~> 1.75)
   - TYPagerController
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - MJRefresh
     - SDCycleScrollView
     - SDWebImage
     - TYPagerController
 
 SPEC CHECKSUMS:
+  MJRefresh: 697f8ec75ebdbe9207767bb682cf0f51b0d8a41f
   SDCycleScrollView: 884b88f0266dd4708a0e1934975c69cb971707b1
   SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
   TYPagerController: 262556ecef99986d26ed77fb1288a198ed42f4af
 
-PODFILE CHECKSUM: 98a8a65754f37ebe03c23e31206618bb7984cb93
+PODFILE CHECKSUM: abc394cc4cdc51c64e8214ff62521a8069b13700
 
 COCOAPODS: 1.7.0.beta.1

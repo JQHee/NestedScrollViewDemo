@@ -224,6 +224,7 @@
 				5E4EE5CB223107F800654619 /* Sources */,
 				5E4EE5CC223107F800654619 /* Frameworks */,
 				5E4EE5CD223107F800654619 /* Resources */,
+				47EFB4103A00B90A7A1BA465 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -340,6 +341,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		47EFB4103A00B90A7A1BA465 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ScrollViewNestedDemo/Pods-ScrollViewNestedDemo-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ScrollViewNestedDemo/Pods-ScrollViewNestedDemo-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ScrollViewNestedDemo/Pods-ScrollViewNestedDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		A23399F3B6886FE466646D1D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

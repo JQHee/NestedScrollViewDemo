@@ -7,6 +7,7 @@
 //
 
 #import "NestedSubViewController.h"
+#import <MJRefresh.h>
 
 @interface NestedSubViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -24,8 +25,18 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     [self.view addSubview:self.tableView];
+    
+    __weak typeof(self) weakSelf = self;
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        __strong typeof(self) strongSelf = weakSelf;
+        // [strongSelf.tableView.mj_header endRefreshing];
+    }];
+    
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+        __strong typeof(self) strongSelf = weakSelf;
+        [strongSelf.tableView.mj_footer endRefreshing];
+    }];
 }
-
 
 - (UITableView *)tableView{
     
@@ -88,10 +99,13 @@
     if (!self.canScroll) {
         scrollView.contentOffset = CGPointZero;
     }
-    if (scrollView.contentOffset.y <= 0) {
+    // 不需要刷新，设置为0即可
+    if (scrollView.contentOffset.y <= -100) {
         self.canScroll = NO;
         scrollView.contentOffset = CGPointZero;
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"tabNoti" object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tabNoti" object:nil];
+    } else {
+        [self.tableView.mj_header setHidden:NO];
     }
 }
 

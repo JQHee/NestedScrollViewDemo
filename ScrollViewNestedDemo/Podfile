@@ -5,6 +5,7 @@ target 'ScrollViewNestedDemo' do
   
 	pod 'SDCycleScrollView','~> 1.75'
   pod 'TYPagerController'
+  pod 'MJRefresh', '~> 3.1.15.7'
   # pod 'JXCategoryView'
 
 end
