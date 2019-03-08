@@ -13,6 +13,7 @@
 #import <SDCycleScrollView.h>
 #import <TYPagerController.h>
 #import <TYTabPagerBar.h>
+#import "NestedNormalSubViewController.h"
 
 #define BANNER_HEIGHT  300.0f
 #define VIEW_COLOR [UIColor colorWithRed:255.0/255 green:78.0/255 blue:144.0/255 alpha:1]
@@ -31,8 +32,8 @@ UITableViewDelegate>
 @property (nonatomic, strong) NestedBaseTableView *tableView;
 @property (nonatomic, strong) SDCycleScrollView *bannerView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, weak) TYTabPagerBar *tabBar;
-@property (nonatomic, weak) TYPagerController *pagerController;
+@property (nonatomic, strong) TYTabPagerBar *tabBar;
+@property (nonatomic, strong) TYPagerController *pagerController;
 @property (nonatomic, strong) NSMutableArray *titlesArray;
 @property (nonatomic, strong) NSMutableArray *VCsArray;
 
@@ -62,21 +63,31 @@ UITableViewDelegate>
     _IsCanScroll = YES;
     self.titlesArray = @[].mutableCopy;
     self.VCsArray = @[].mutableCopy;
+    
+    NSArray *titles = @[@"全部",@"服饰穿搭",@"生活百货",@"美食吃货",@"美容护理",@"母婴儿童",@"数码家电",@"NormalVC"];
+    self.titlesArray = [titles mutableCopy];
+    
+    [titles enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isEqualToString:@"NormalVC"]) {
+            NestedNormalSubViewController *normalNestedVC = [NestedNormalSubViewController new];
+            [self addChildViewController:normalNestedVC];
+            [self.VCsArray addObject:normalNestedVC];
+        } else {
+            NestedSubViewController *VC = [NestedSubViewController new];
+            VC.type = obj;
+            [self addChildViewController:VC];
+            [self.VCsArray addObject:VC];
+        }
+        
+    }];
 }
 
 - (void)setupUI {
     self.view.backgroundColor = [UIColor cyanColor];
     [self setupNavBar];
     
-    [self addTabPageBar];
-    [self addPagerController];
-    
-    self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-    self.titleLabel.textColor = [UIColor whiteColor];
-    self.titleLabel.text = @"首页";
-    self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.navigationItem.titleView = self.titleLabel;
-    self.titleLabel.alpha = 0;
+    
     
     if (@available(iOS 11.0,*)) {
         self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -97,38 +108,27 @@ UITableViewDelegate>
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageWithColor:VIEW_COLOR] forBarMetrics:UIBarMetricsDefault];
 }
 
-- (void)addTabPageBar {
-    TYTabPagerBar *tabBar = [[TYTabPagerBar alloc]init];
-    tabBar.layout.barStyle = TYPagerBarStyleNoneView;
-    tabBar.dataSource = self;
-    tabBar.delegate = self;
-    [tabBar registerClass:[TYTabPagerBarCell class] forCellWithReuseIdentifier:[TYTabPagerBarCell cellIdentifier]];
-    _tabBar = tabBar;
-}
-
-- (void)addPagerController {
-    TYPagerController *pagerController = [[TYPagerController alloc]init];
-    pagerController.layout.prefetchItemCount = 1;
-    //pagerController.layout.autoMemoryCache = NO;
-    // 只有当scroll滚动动画停止时才加载pagerview，用于优化滚动时性能
-    pagerController.layout.addVisibleItemOnlyWhenScrollAnimatedEnd = YES;
-    pagerController.dataSource = self;
-    pagerController.delegate = self;
-    [self addChildViewController:pagerController];
-    _pagerController = pagerController;
-}
-
 - (void)viewBindEvent {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tabNotiAction) name:@"tabNoti" object:nil];
 }
 
--(void)subTabViewCanScroll:(BOOL)canScroll{
-    for (NestedSubViewController *subVC in self.VCsArray) {
-        subVC.canScroll = canScroll;
-        if (!canScroll) {
-            subVC.tableView.contentOffset = CGPointZero;
+- (void)subTabViewCanScroll:(BOOL)canScroll{
+    for (UIViewController *subVC in self.VCsArray) {
+        if ([subVC isKindOfClass:[NestedSubViewController class]]) {
+            NestedSubViewController *tempSubVC = (NestedSubViewController *)subVC;
+            tempSubVC.canScroll = canScroll;
+            if (!canScroll) {
+                tempSubVC.tableView.contentOffset = CGPointZero;
+            }
         }
+
     }
+}
+
+- (void) reload {
+    // 必须reload
+    [self.tabBar reloadData];
+    [self.pagerController reloadData];
 }
 
 #pragma mark - Event response
@@ -157,6 +157,9 @@ UITableViewDelegate>
 }
 
 - (void)pagerTabBar:(TYTabPagerBar *)pagerTabBar didSelectItemAtIndex:(NSInteger)index {
+    if (index == self.titlesArray.count - 1) {
+        _IsCanScroll = YES;
+    }
     [_pagerController scrollToControllerAtIndex:index animate:YES];
 }
 
@@ -173,6 +176,9 @@ UITableViewDelegate>
 #pragma mark - TYPagerControllerDelegate
 
 - (void)pagerController:(TYPagerController *)pagerController transitionFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex animated:(BOOL)animated {
+    if (toIndex == self.titlesArray.count - 1) {
+        _IsCanScroll = YES;
+    }
     [_tabBar scrollToItemFromIndex:fromIndex toIndex:toIndex animate:animated];
 }
 
@@ -212,6 +218,7 @@ UITableViewDelegate>
     if (!cell) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cid"];
     }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell addSubview:self.contentView];
     return cell;
 }
@@ -222,8 +229,13 @@ UITableViewDelegate>
     if (scrollView.contentOffset.y >- naviH) {
         scrollView.contentOffset = CGPointMake(0, -naviH);
         if (_IsCanScroll) {
-            _IsCanScroll = NO;
-            [self subTabViewCanScroll:YES];
+            // 让普通的VC也可以正常滚动
+            if (self.pagerController.curIndex == self.titlesArray.count - 1) {
+                _IsCanScroll = YES;
+            } else {
+                _IsCanScroll = NO;
+                [self subTabViewCanScroll:YES];
+            }
         }
     }else{
         if (!_IsCanScroll) {
@@ -241,15 +253,17 @@ UITableViewDelegate>
     
     if (!_tableView) {
         CGSize screen = [UIScreen mainScreen].bounds.size;
-        _tableView = [[NestedBaseTableView alloc]initWithFrame:CGRectMake(0, 0, screen.width, screen.height) style:UITableViewStyleGrouped];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        _tableView.estimatedSectionHeaderHeight = 0;
-        _tableView.estimatedSectionFooterHeight = 0;
-        _tableView.estimatedRowHeight = 0;
-        _tableView.contentInset = UIEdgeInsetsMake(BANNER_HEIGHT, 0, 0, 0);
-        _tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
-        [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cid"];
+        NestedBaseTableView *tableView = [[NestedBaseTableView alloc]initWithFrame:CGRectMake(0, 0, screen.width, screen.height) style:UITableViewStyleGrouped];
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.estimatedSectionHeaderHeight = 0;
+        tableView.estimatedSectionFooterHeight = 0;
+        tableView.estimatedRowHeight = 0;
+        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        tableView.contentInset = UIEdgeInsetsMake(BANNER_HEIGHT, 0, 0, 0);
+        tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
+        [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cid"];
+        _tableView = tableView;
     }
     return _tableView;
 }
@@ -257,28 +271,55 @@ UITableViewDelegate>
 - (UIView *)contentView {
     if (!_contentView) {
         CGRect frame = CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
-        _contentView = [[UIView alloc]initWithFrame: frame];
-        _contentView.backgroundColor = [UIColor grayColor];
-        NSArray *titles = @[@"全部",@"服饰穿搭",@"生活百货",@"美食吃货",@"美容护理",@"母婴儿童",@"数码家电"];
-        self.titlesArray = [titles mutableCopy];
-        
-        [titles enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NestedSubViewController *VC = [NestedSubViewController new];
-            VC.type = obj;
-            [self addChildViewController:VC];
-            [self.VCsArray addObject:VC];
-        }];
-        _tabBar.frame = CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, 36);
-        _pagerController.view.frame = CGRectMake(0, 36, UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height - 36);
-    
-        [_contentView addSubview:_tabBar];
-        [_contentView addSubview:_pagerController.view];
-        // 必须reload
-        [_tabBar reloadData];
-        [_pagerController reloadData];
+        UIView *contentView = [[UIView alloc]initWithFrame: frame];
+        [contentView addSubview:self.tabBar];
+        [contentView addSubview:self.pagerController.view];
+        self.tabBar.frame = CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, 45);
+        self.pagerController.view.frame = CGRectMake(0, 45, UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height - 45);
+        [self reload];
+        _contentView = contentView;
         // 将内容传入_contentView中
     }
     return _contentView;
+}
+
+- (TYTabPagerBar *) tabBar {
+    if (! _tabBar) {
+        TYTabPagerBar *tabBar = [[TYTabPagerBar alloc]init];
+        tabBar.layout.barStyle = TYPagerBarStyleNoneView;
+        tabBar.dataSource = self;
+        tabBar.delegate = self;
+        [tabBar registerClass:[TYTabPagerBarCell class] forCellWithReuseIdentifier:[TYTabPagerBarCell cellIdentifier]];
+        _tabBar = tabBar;
+    }
+    return _tabBar;
+}
+
+- (TYPagerController *) pagerController {
+    if (!_pagerController) {
+        TYPagerController *pagerController = [[TYPagerController alloc]init];
+        pagerController.layout.prefetchItemCount = 1;
+        //pagerController.layout.autoMemoryCache = NO;
+        // 只有当scroll滚动动画停止时才加载pagerview，用于优化滚动时性能
+        pagerController.layout.addVisibleItemOnlyWhenScrollAnimatedEnd = YES;
+        pagerController.dataSource = self;
+        pagerController.delegate = self;
+        [self addChildViewController:pagerController];
+        _pagerController = pagerController;
+    }
+    return _pagerController;
+}
+
+- (UILabel *) titleLabel {
+    if (!_titleLabel) {
+        UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
+        titleLabel.textColor = [UIColor whiteColor];
+        titleLabel.text = @"首页";
+        titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleLabel.alpha = 0;
+        _titleLabel = titleLabel;
+    }
+    return _titleLabel;
 }
 
 

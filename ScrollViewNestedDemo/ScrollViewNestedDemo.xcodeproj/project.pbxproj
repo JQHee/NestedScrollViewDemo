@@ -20,6 +20,7 @@
 		5E4EE60B223108B100654619 /* NestedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E4EE60A223108B100654619 /* NestedViewController.m */; };
 		5E4EE60F223108FC00654619 /* NestedSubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E4EE60E223108FC00654619 /* NestedSubViewController.m */; };
 		5E4EE61322310AC500654619 /* UIImage+Core.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E4EE61222310AC500654619 /* UIImage+Core.m */; };
+		5E91AA112231F40E0054808E /* NestedNormalSubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E91AA102231F40E0054808E /* NestedNormalSubViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,8 @@
 		5E4EE60E223108FC00654619 /* NestedSubViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NestedSubViewController.m; sourceTree = "<group>"; };
 		5E4EE61122310AC500654619 /* UIImage+Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+Core.h"; sourceTree = "<group>"; };
 		5E4EE61222310AC500654619 /* UIImage+Core.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Core.m"; sourceTree = "<group>"; };
+		5E91AA0F2231F40E0054808E /* NestedNormalSubViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NestedNormalSubViewController.h; sourceTree = "<group>"; };
+		5E91AA102231F40E0054808E /* NestedNormalSubViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NestedNormalSubViewController.m; sourceTree = "<group>"; };
 		84B598B07A9E3401944E17B4 /* libPods-ScrollViewNestedDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ScrollViewNestedDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -101,7 +104,6 @@
 				48D0BAF33E3CF85977AB1BA2 /* Pods-ScrollViewNestedDemo.debug.xcconfig */,
 				17F8A3A7534BDE23F5AB8293 /* Pods-ScrollViewNestedDemo.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -188,6 +190,8 @@
 				5E4EE60A223108B100654619 /* NestedViewController.m */,
 				5E4EE60D223108FC00654619 /* NestedSubViewController.h */,
 				5E4EE60E223108FC00654619 /* NestedSubViewController.m */,
+				5E91AA0F2231F40E0054808E /* NestedNormalSubViewController.h */,
+				5E91AA102231F40E0054808E /* NestedNormalSubViewController.m */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -372,6 +376,7 @@
 				5E4EE61322310AC500654619 /* UIImage+Core.m in Sources */,
 				5E4EE60F223108FC00654619 /* NestedSubViewController.m in Sources */,
 				5E4EE5D4223107F800654619 /* AppDelegate.m in Sources */,
+				5E91AA112231F40E0054808E /* NestedNormalSubViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
